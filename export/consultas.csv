@@ -1,0 +1,4 @@
+data_consulta,hora_consulta,NomePaciente,Sobrenome,NomeMedico,especialidade
+2025-04-25,0 days 09:00:00,Ana,Silva,Dra. Ana Silva,Pediatria
+2025-04-26,0 days 10:30:00,Bruno,Souza,Dra. Fernanda Lima,Clínico Geral
+2025-04-27,0 days 14:15:00,Carla,Pereira,Dr. Carlos Souza,Gastroenterologia

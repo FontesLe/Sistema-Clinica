@@ -1,0 +1,28 @@
+# Arquivos Excel
+export/*.xlsx
+
+# Arquivos Excel
+export/*.xlsx
+
+.env
+
+# Ambiente virtual
+venv/
+.env/
+ENV/
+
+# Arquivos Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Variáveis de ambiente
+.env
+
+# Outros
+.DS_Store
+*.log
+
+# Backups de banco de dados
+Database/

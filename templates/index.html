@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Clínica Médica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f8ff;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 12px;
+            font-size: 1.4em;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+        
+        .error {
+            color: #dc3545;
+            padding: 15px;
+            background-color: #f8d7da;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 2em;
+            margin: 0;
+            color: #1976d2;
+            border: none;
+            padding: 0;
+        }
+        
+        .stat-card p {
+            margin: 5px 0 0 0;
+            color: #424242;
+            font-weight: 500;
+        }
+        
+        .scroll-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .scroll-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+        
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #5a67d8;
+        }
+        
+        /* ESTILOS PARA FORMULÁRIOS */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        input, select, button, textarea {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-row > * {
+            flex: 1;
+        }
+        
+        .tab-container {
+            margin-top: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .success-message {
+            color: #28a745;
+            padding: 10px;
+            background-color: #d4edda;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Sistema de Gestão Clínica</h1>
+            <p>Dashboard Integrado - Dados em Tempo Real</p>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h3>📊 Resumo do Sistema</h3>
+                <div id="resumo-container">
+                    <div class="loading">🔄 Carregando resumo...</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>👥 Pacientes Cadastrados</h3>
+                <div id="pacientes-container">
+                    <div class="loading">🔄 Carregando pacientes...</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>👨‍⚕️ Médicos Cadastrados</h3>
+                <div id="medicos-container">
+                    <div class="loading">🔄 Carregando médicos...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" onclick="openTab('pacientes-tab')">Cadastrar Paciente</div>
+                <div class="tab" onclick="openTab('medicos-tab')">Cadastrar Médico</div>
+                <div class="tab" onclick="openTab('consultas-tab')">Nova Consulta</div>
+                <div class="tab" onclick="openTab('pagamentos-tab')">Registrar Pagamento</div>
+            </div>
+            
+            <div id="pacientes-tab" class="tab-content active">
+                <h3>➕ Cadastrar Novo Paciente</h3>
+                <form id="form-paciente" onsubmit="cadastrarPaciente(event)">
+                    <div class="form-row">
+                        <input type="text" name="nome" placeholder="Nome" required>
+                        <input type="text" name="sobrenome" placeholder="Sobrenome" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" name="cpf" placeholder="CPF" required>
+                        <input type="date" name="data_nascimento" placeholder="Data Nasc." required>
+                    </div>
+                    <div class="form-row">
+                        <input type="tel" name="telefone" placeholder="Telefone" required>
+                        <input type="email" name="email" placeholder="Email">
+                    </div>
+                    <button type="submit">Cadastrar Paciente</button>
+                    <div id="mensagem-paciente"></div>
+                </form>
+            </div>
+            
+            <div id="medicos-tab" class="tab-content">
+                <h3>➕ Cadastrar Novo Médico</h3>
+                <form id="form-medico" onsubmit="cadastrarMedico(event)">
+                    <div class="form-row">
+                        <input type="text" name="nome" placeholder="Nome" required>
+                        <input type="text" name="crm" placeholder="CRM" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="number" name="id_especializacao" placeholder="ID Especialização">
+                        <input type="tel" name="telefone_emergencia" placeholder="Telefone Emergência">
+                    </div>
+                    <button type="submit">Cadastrar Médico</button>
+                    <div id="mensagem-medico"></div>
+                </form>
+            </div>
+            
+            <div id="consultas-tab" class="tab-content">
+                <h3>➕ Agendar Nova Consulta</h3>
+                <form id="form-consulta" onsubmit="cadastrarConsulta(event)">
+                    <div class="form-row">
+                        <input type="number" name="id_paciente" placeholder="ID Paciente" required>
+                        <input type="number" name="id_medico" placeholder="ID Médico" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="datetime-local" name="data_consulta" placeholder="Data e Hora" required>
+                        <input type="text" name="status" placeholder="Status" value="agendada">
+                    </div>
+                    <textarea name="observacoes" placeholder="Observações"></textarea>
+                    <button type="submit">Agendar Consulta</button>
+                    <div id="mensagem-consulta"></div>
+                </form>
+            </div>
+            
+            <div id="pagamentos-tab" class="tab-content">
+                <h3>➕ Registrar Pagamento</h3>
+                <form id="form-pagamento" onsubmit="cadastrarPagamento(event)">
+                    <div class="form-row">
+                        <input type="number" name="id_consulta" placeholder="ID Consulta" required>
+                        <input type="number" name="valor" step="0.01" placeholder="Valor" required>
+                    </div>
+                    <div class="form-row">
+                        <select name="forma_pagamento" required>
+                            <option value="">Forma de Pagamento</option>
+                            <option value="cartao">Cartão</option>
+                            <option value="dinheiro">Dinheiro</option>
+                            <option value="pix">PIX</option>
+                            <option value="transferencia">Transferência</option>
+                        </select>
+                        <select name="status" required>
+                            <option value="">Status</option>
+                            <option value="pendente">Pendente</option>
+                            <option value="pago">Pago</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <button type="submit">Registrar Pagamento</button>
+                    <div id="mensagem-pagamento"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const API_BASE_URL = 'http://127.0.0.1:5801';
+    
+    function openTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        document.getElementById(tabId).classList.add('active');
+        
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+
+        const activeTab = Array.from(document.querySelectorAll('.tab')).find(
+            tab => tab.onclick.toString().includes(tabId)
+        );
+        
+        if (activeTab) {
+            activeTab.classList.add('active');
+        }
+    }
+    
+    async function carregarDados() {
+        try {
+            console.log('🚀 Iniciando carregamento de dados...');
+            
+            console.log('📋 Carregando pacientes...');
+            const responsePacientes = await fetch(`${API_BASE_URL}/pacientes`);
+            console.log('✅ Resposta pacientes:', responsePacientes.status);
+            const pacientes = await responsePacientes.json();
+            console.log('📦 Dados pacientes:', pacientes);
+            
+            console.log('🩺 Carregando médicos...');
+            const responseMedicos = await fetch(`${API_BASE_URL}/medicos`);
+            console.log('✅ Resposta médicos:', responseMedicos.status);
+            const medicos = await responseMedicos.json();
+            console.log('📦 Dados médicos:', medicos);
+            
+            console.log('📅 Carregando consultas...');
+            const responseConsultas = await fetch(`${API_BASE_URL}/consultas`);
+            console.log('✅ Resposta consultas:', responseConsultas.status);
+            const consultas = await responseConsultas.json();
+            console.log('📦 Dados consultas:', consultas);
+            
+            console.log('💰 Carregando pagamentos...');
+            const responsePagamentos = await fetch(`${API_BASE_URL}/pagamentos`);
+            console.log('✅ Resposta pagamentos:', responsePagamentos.status);
+            const pagamentos = await responsePagamentos.json();
+            console.log('📦 Dados pagamentos:', pagamentos);
+            
+            exibirPacientes(pacientes);
+            exibirMedicos(medicos);
+            exibirResumo(consultas, pacientes.length, medicos.length, pagamentos.length);
+            
+            console.log('🎉 Dados carregados com sucesso!');
+            
+        } catch (error) {
+            console.error('❌ Erro detalhado:', error);
+            document.getElementById('pacientes-container').innerHTML = 
+                '<div class="error">❌ Erro ao carregar pacientes: ' + error.message + '</div>';
+            document.getElementById('medicos-container').innerHTML = 
+                '<div class="error">❌ Erro ao carregar médicos: ' + error.message + '</div>';
+            document.getElementById('resumo-container').innerHTML = 
+                '<div class="error">❌ Erro ao carregar resumo</div>';
+        }
+    }
+    
+    function exibirPacientes(pacientes) {
+        const container = document.getElementById('pacientes-container');
+        
+        if (pacientes.erro) {
+            container.innerHTML = `<div class="error">❌ ${pacientes.erro}</div>`;
+            return;
+        }
+        
+        if (pacientes.length === 0) {
+            container.innerHTML = '<p>📭 Nenhum paciente cadastrado</p>';
+            return;
+        }
+        
+        let html = `
+            <p><strong>📊 Total:</strong> ${pacientes.length} pacientes</p>
+            <div class="scroll-container">
+            <table>
+                <tr>
+                    <th>Nome Completo</th>
+                    <th>CPF</th>
+                    <th>Telefone</th>
+                    <th>Email</th>
+                    <th>Data Nasc.</th>
+                </tr>
+        `;
+        
+        pacientes.forEach(paciente => {
+            const nomeCompleto = `${paciente.nome || ''} ${paciente.Sobrenone || ''}`.trim();
+            
+            html += `
+                <tr>
+                    <td>${nomeCompleto || 'N/A'}</td>
+                    <td>${paciente.CPF || 'N/A'}</td>
+                    <td>${paciente.Telefone || 'N/A'}</td>
+                    <td>${paciente.email || 'N/A'}</td>
+                    <td>${paciente.Data_nasdmento || 'N/A'}</td>
+                </tr>
+            `;
+        });
+        
+        html += '</table></div>';
+        container.innerHTML = html;
+    }
+    
+    function exibirMedicos(medicos) {
+        const container = document.getElementById('medicos-container');
+        
+        if (medicos.erro) {
+            container.innerHTML = `<div class="error">❌ ${medicos.erro}</div>`;
+            return;
+        }
+        
+        if (medicos.length === 0) {
+            container.innerHTML = '<p>📭 Nenhum médico cadastrado</p>';
+            return;
+        }
+        
+        let html = `
+            <p><strong>📊 Total:</strong> ${medicos.length} médicos</p>
+            <div class="scroll-container">
+            <table>
+                <tr>
+                    <th>Nome</th>
+                    <th>CRM</th>
+                    <th>Telefone</th>
+                </tr>
+        `;
+        
+        medicos.forEach(medico => {
+            html += `
+                <tr>
+                    <td>${medico.nome || 'N/A'}</td>
+                    <td>${medico.CRM || 'N/A'}</td>
+                    <td>${medico.telefone_emergencia || 'N/A'}</td>
+                </tr>
+            `;
+        });
+        
+        html += '</table></div>';
+        container.innerHTML = html;
+    }
+    
+    function exibirResumo(consultas, totalPacientes, totalMedicos, totalPagamentos) {
+        const container = document.getElementById('resumo-container');
+        const totalConsultas = consultas.erro ? 0 : consultas.length;
+        
+        let html = `
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>${totalPacientes}</h3>
+                    <p>Pacientes</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${totalMedicos}</h3>
+                    <p>Médicos</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${totalConsultas}</h3>
+                    <p>Consultas</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${totalPagamentos}</h3>
+                    <p>Pagamentos</p>
+                </div>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+    }
+    
+    // FUNÇÕES PARA CADASTRO
+    async function cadastrarPaciente(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const dados = Object.fromEntries(formData.entries());
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/pacientes`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dados)
+            });
+            
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                document.getElementById('mensagem-paciente').innerHTML = 
+                    `<div class="success-message">✅ ${resultado.mensagem}</div>`;
+                event.target.reset();
+                carregarDados(); // Recarrega os dados
+            } else {
+                document.getElementById('mensagem-paciente').innerHTML = 
+                    `<div class="error">❌ ${resultado.erro}</div>`;
+            }
+        } catch (error) {
+            document.getElementById('mensagem-paciente').innerHTML = 
+                `<div class="error">❌ Erro: ${error.message}</div>`;
+        }
+    }
+
+    async function cadastrarMedico(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const dados = Object.fromEntries(formData.entries());
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/medicos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dados)
+            });
+            
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                document.getElementById('mensagem-medico').innerHTML = 
+                    `<div class="success-message">✅ ${resultado.mensagem}</div>`;
+                event.target.reset();
+                carregarDados();
+            } else {
+                document.getElementById('mensagem-medico').innerHTML = 
+                    `<div class="error">❌ ${resultado.erro}</div>`;
+            }
+        } catch (error) {
+            document.getElementById('mensagem-medico').innerHTML = 
+                `<div class="error">❌ Erro: ${error.message}</div>`;
+        }
+    }
+
+    async function cadastrarConsulta(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const dados = Object.fromEntries(formData.entries());
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/consultas`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dados)
+            });
+            
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                document.getElementById('mensagem-consulta').innerHTML = 
+                    `<div class="success-message">✅ ${resultado.mensagem}</div>`;
+                event.target.reset();
+                carregarDados();
+            } else {
+                document.getElementById('mensagem-consulta').innerHTML = 
+                    `<div class="error">❌ ${resultado.erro}</div>`;
+            }
+        } catch (error) {
+            document.getElementById('mensagem-consulta').innerHTML = 
+                `<div class="error">❌ Erro: ${error.message}</div>`;
+        }
+    }
+
+    async function cadastrarPagamento(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const dados = Object.fromEntries(formData.entries());
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/pagamentos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dados)
+            });
+            
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                document.getElementById('mensagem-pagamento').innerHTML = 
+                    `<div class="success-message">✅ ${resultado.mensagem}</div>`;
+                event.target.reset();
+                carregarDados();
+            } else {
+                document.getElementById('mensagem-pagamento').innerHTML = 
+                    `<div class="error">❌ ${resultado.erro}</div>`;
+            }
+        } catch (error) {
+            document.getElementById('mensagem-pagamento').innerHTML = 
+                `<div class="error">❌ Erro: ${error.message}</div>`;
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', carregarDados);
+    </script>
+</body>
+</html>
